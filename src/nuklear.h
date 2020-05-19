@@ -3803,7 +3803,8 @@ struct nk_font {
 
 enum nk_font_atlas_format {
     NK_FONT_ATLAS_ALPHA8,
-    NK_FONT_ATLAS_RGBA32
+    NK_FONT_ATLAS_RGBA32,
+    NK_FONT_ATLAS_ARGB32,
 };
 
 struct nk_font_atlas {
