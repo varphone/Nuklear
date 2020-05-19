@@ -4007,7 +4007,8 @@ struct nk_font {
 
 enum nk_font_atlas_format {
     NK_FONT_ATLAS_ALPHA8,
-    NK_FONT_ATLAS_RGBA32
+    NK_FONT_ATLAS_RGBA32,
+    NK_FONT_ATLAS_ARGB32,
 };
 
 struct nk_font_atlas {
@@ -16622,9 +16623,11 @@ nk_font_bake_custom_data(void *img_memory, int img_width, int img_height,
 }
 NK_INTERN void
 nk_font_bake_convert(void *out_memory, int img_width, int img_height,
-    const void *in_memory)
+    const void *in_memory, enum nk_font_atlas_format fmt)
 {
     int n = 0;
+    nk_rune shift = (fmt == NK_FONT_ATLAS_RGBA32) ? 24 : 0;
+    nk_rune mask = (fmt == NK_FONT_ATLAS_RGBA32) ? 0x00FFFFFF : 0xFFFFFF00;
     nk_rune *dst;
     const nk_byte *src;
 
@@ -16637,7 +16640,7 @@ nk_font_bake_convert(void *out_memory, int img_width, int img_height,
     dst = (nk_rune*)out_memory;
     src = (const nk_byte*)in_memory;
     for (n = (int)(img_width * img_height); n > 0; n--)
-        *dst++ = ((nk_rune)(*src++) << 24) | 0x00FFFFFF;
+        *dst++ = ((nk_rune)(*src++) << shift) | mask;
 }
 
 /* -------------------------------------------------------------
@@ -17415,13 +17418,13 @@ nk_font_atlas_bake(struct nk_font_atlas *atlas, int *width, int *height,
     nk_font_bake_custom_data(atlas->pixel, *width, *height, atlas->custom,
             nk_custom_cursor_data, NK_CURSOR_DATA_W, NK_CURSOR_DATA_H, '.', 'X');
 
-    if (fmt == NK_FONT_ATLAS_RGBA32) {
+    if (fmt == NK_FONT_ATLAS_RGBA32 || fmt == NK_FONT_ATLAS_ARGB32) {
         /* convert alpha8 image into rgba32 image */
         void *img_rgba = atlas->temporary.alloc(atlas->temporary.userdata,0,
                             (nk_size)(*width * *height * 4));
         NK_ASSERT(img_rgba);
         if (!img_rgba) goto failed;
-        nk_font_bake_convert(img_rgba, *width, *height, atlas->pixel);
+        nk_font_bake_convert(img_rgba, *width, *height, atlas->pixel, fmt);
         atlas->temporary.free(atlas->temporary.userdata, atlas->pixel);
         atlas->pixel = img_rgba;
     }
