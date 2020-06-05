@@ -263,6 +263,36 @@ nk_layout_row(struct nk_context *ctx, enum nk_layout_format fmt,
     layout->row.filled = 0;
 }
 NK_API void
+nk_layout_row_colored(struct nk_context *ctx, enum nk_layout_format fmt,
+    float height, int cols, const float *ratio, struct nk_color color)
+{
+    struct nk_style *style;
+    struct nk_window *win;
+    struct nk_color old_color;
+    int old_flags;
+
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout)
+        return;
+
+    style = &ctx->style;
+    win = ctx->current;
+
+    /* Save current states */
+    old_color = style->window.background;
+    old_flags = win->layout->flags;
+
+    style->window.background = color;
+    win->layout->flags |= NK_WINDOW_DYNAMIC;
+    nk_layout_row(ctx, fmt, height, cols, ratio);
+
+    /* Restore saved states */
+    style->window.background = old_color;
+    win->layout->flags = old_flags;
+}
+NK_API void
 nk_layout_row_template_begin(struct nk_context *ctx, float height)
 {
     struct nk_window *win;
