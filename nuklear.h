@@ -2483,6 +2483,20 @@ NK_API void nk_layout_row_template_end(struct nk_context*);
 /// __columns__ | Number of widgets inside row
 */
 NK_API void nk_layout_space_begin(struct nk_context*, enum nk_layout_format, float height, int widget_count);
+/*/// #### nk_layout_space_colored_begin
+/// Begins a new layouting space that allows to specify each widgets position and size with background color.
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
+/// void nk_layout_space_colored_begin(struct nk_context*, enum nk_layout_format, float height, int widget_count, struct nk_color color);
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///
+/// Parameter   | Description
+/// ------------|-----------------------------------------------------------
+/// __ctx__     | Must point to an previously initialized `nk_context` struct after call `nk_begin_xxx`
+/// __fmt__     | Either `NK_DYNAMIC` for window ratio or `NK_STATIC` for fixed size columns
+/// __height__  | Holds height of each widget in row or zero for auto layouting
+/// __columns__ | Number of widgets inside row
+*/
+NK_API void nk_layout_space_colored_begin(struct nk_context*, enum nk_layout_format, float height, int widget_count, struct nk_color color);
 /*/// #### nk_layout_space_push
 /// Pushes position and size of the next widget in own coordinate space either as pixel or ratio
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
@@ -21695,6 +21709,36 @@ nk_layout_space_begin(struct nk_context *ctx, enum nk_layout_format fmt,
     layout->row.filled = 0;
     layout->row.item_width = 0;
     layout->row.item_offset = 0;
+}
+NK_API void
+nk_layout_space_colored_begin(struct nk_context *ctx, enum nk_layout_format fmt,
+    float height, int widget_count, struct nk_color color)
+{
+    struct nk_style *style;
+    struct nk_window *win;
+    struct nk_color old_color;
+    int old_flags;
+
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout)
+        return;
+
+    style = &ctx->style;
+    win = ctx->current;
+
+    /* Save current states */
+    old_color = style->window.background;
+    old_flags = win->layout->flags;
+
+    style->window.background = color;
+    win->layout->flags |= NK_WINDOW_DYNAMIC;
+    nk_layout_space_begin(ctx, fmt, height, widget_count);
+
+    /* Restore saved states */
+    style->window.background = old_color;
+    win->layout->flags = old_flags;
 }
 NK_API void
 nk_layout_space_end(struct nk_context *ctx)
