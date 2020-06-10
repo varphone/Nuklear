@@ -1523,7 +1523,7 @@ NK_API struct nk_command_buffer* nk_window_get_canvas(struct nk_context*);
 ///     Only call this function between calls `nk_begin_xxx` and `nk_end`
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
-/// void nk_window_get_scroll(struct nk_context *ctx, nk_uint *offset_x, nk_uint *offset_y);
+/// void nk_window_get_scroll(const struct nk_context *ctx, nk_uint *offset_x, nk_uint *offset_y);
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
 /// Parameter    | Description
@@ -1532,7 +1532,7 @@ NK_API struct nk_command_buffer* nk_window_get_canvas(struct nk_context*);
 /// __offset_x__ | A pointer to the x offset output (or NULL to ignore)
 /// __offset_y__ | A pointer to the y offset output (or NULL to ignore)
 */
-NK_API void nk_window_get_scroll(struct nk_context*, nk_uint *offset_x, nk_uint *offset_y);
+NK_API void nk_window_get_scroll(const struct nk_context*, nk_uint *offset_x, nk_uint *offset_y);
 /*/// #### nk_window_has_focus
 /// Returns if the currently processed window is currently active
 /// !!! WARNING
