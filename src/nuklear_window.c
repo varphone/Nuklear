@@ -404,7 +404,7 @@ nk_window_get_panel(struct nk_context *ctx)
     return ctx->current->layout;
 }
 NK_API void
-nk_window_get_scroll(struct nk_context *ctx, nk_uint *offset_x, nk_uint *offset_y)
+nk_window_get_scroll(const struct nk_context *ctx, nk_uint *offset_x, nk_uint *offset_y)
 {
     struct nk_window *win;
     NK_ASSERT(ctx);
