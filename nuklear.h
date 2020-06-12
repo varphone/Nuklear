@@ -21517,12 +21517,12 @@ nk_layout_row(struct nk_context *ctx, enum nk_layout_format fmt,
 }
 NK_API void
 nk_layout_row_colored(struct nk_context *ctx, enum nk_layout_format fmt,
-    float height, int cols, const float *ratio, struct nk_color background)
+    float height, int cols, const float *ratio, struct nk_color color)
 {
     struct nk_style *style;
     struct nk_window *win;
-    struct nk_color old_background;
-    int old_flags;
+    struct nk_rect rect;
+    struct nk_rect bounds;
 
     NK_ASSERT(ctx);
     NK_ASSERT(ctx->current);
@@ -21533,17 +21533,16 @@ nk_layout_row_colored(struct nk_context *ctx, enum nk_layout_format fmt,
     style = &ctx->style;
     win = ctx->current;
 
-    /* Save current states */
-    old_background = style->window.background;
-    old_flags = win->layout->flags;
-
-    style->window.background = background;
-    win->layout->flags |= NK_WINDOW_DYNAMIC;
+    /* Call super layout */
     nk_layout_row(ctx, fmt, height, cols, ratio);
-
-    /* Restore saved states */
-    style->window.background = old_background;
-    win->layout->flags = old_flags;
+    /* Peek first column rect */
+    nk_layout_peek(&rect, ctx);
+    /* Get the row bounds */
+    bounds = nk_layout_space_bounds(ctx);
+    /* Adjust the width of the rect to fit the row */
+    rect.w = bounds.w;
+    /* Fill the rect with color */
+    nk_fill_rect(&win->buffer, rect, 0, color);
 }
 NK_API void
 nk_layout_row_template_begin(struct nk_context *ctx, float height)
