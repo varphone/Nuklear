@@ -2526,6 +2526,19 @@ NK_API void nk_layout_space_colored_begin(struct nk_context*, enum nk_layout_for
 /// __bounds__  | Position and size in laoyut space local coordinates
 */
 NK_API void nk_layout_space_push(struct nk_context*, struct nk_rect bounds);
+/*/// #### nk_layout_space_colored_push
+/// Pushes position and size of the next widget in own coordinate space either as pixel or ratio
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
+/// void nk_layout_space_colored_push(struct nk_context *ctx, struct nk_rect bounds, struct nk_color color);
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///
+/// Parameter   | Description
+/// ------------|-----------------------------------------------------------
+/// __ctx__     | Must point to an previously initialized `nk_context` struct after call `nk_layout_space_begin`
+/// __bounds__  | Position and size in laoyut space local coordinates
+/// __color__   | The background color for the layout space
+*/
+NK_API void nk_layout_space_colored_push(struct nk_context*, struct nk_rect bounds, struct nk_color color);
 /*/// #### nk_layout_space_end
 /// Marks the end of the layout space
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
@@ -21812,6 +21825,23 @@ nk_layout_space_push(struct nk_context *ctx, struct nk_rect rect)
     win = ctx->current;
     layout = win->layout;
     layout->row.item = rect;
+}
+NK_API void
+nk_layout_space_colored_push(struct nk_context *ctx, struct nk_rect rect, struct nk_color color)
+{
+    struct nk_window *win;
+    struct nk_panel *layout;
+
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout)
+        return;
+
+    win = ctx->current;
+    layout = win->layout;
+    layout->row.item = rect;
+    nk_fill_rect(&win->buffer, rect, 0, color);
 }
 NK_API struct nk_rect
 nk_layout_space_bounds(struct nk_context *ctx)

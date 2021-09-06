@@ -518,6 +518,23 @@ nk_layout_space_push(struct nk_context *ctx, struct nk_rect rect)
     layout = win->layout;
     layout->row.item = rect;
 }
+NK_API void
+nk_layout_space_colored_push(struct nk_context *ctx, struct nk_rect rect, struct nk_color color)
+{
+    struct nk_window *win;
+    struct nk_panel *layout;
+
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout)
+        return;
+
+    win = ctx->current;
+    layout = win->layout;
+    layout->row.item = rect;
+    nk_fill_rect(&win->buffer, rect, 0, color);
+}
 NK_API struct nk_rect
 nk_layout_space_bounds(struct nk_context *ctx)
 {
